@@ -1,16 +1,12 @@
 package com.github.basdxz.journeymappartyhelper.commands;
 
-import journeymap.client.model.Waypoint;
 import journeymap.client.waypoint.WaypointStore;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.github.basdxz.journeymappartyhelper.util.WaypointHelper.addNewWaypoint;
 
 public class SetWaypoint extends CommandBase {
     final private ArrayList<String> aliases = new ArrayList<>();
@@ -49,7 +45,7 @@ public class SetWaypoint extends CommandBase {
                 dims.add(0);
                 dims.add(1);
                 dims.add(-1);
-                addNewWaypoint("Test", 0, 0, 0, Waypoint.Type.Normal, 255, 0, 0, dims);
+                //addNewWaypoint("Test", 0, 0, 0, Waypoint.Type.Normal, 255, 0, 0, dims);
             }
         }
 
