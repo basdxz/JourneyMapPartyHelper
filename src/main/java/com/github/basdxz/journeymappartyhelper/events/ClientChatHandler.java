@@ -11,8 +11,9 @@ public class ClientChatHandler {
     public void onMessageReceived(ClientChatReceivedEvent event) {
         String message = event.message.getUnformattedText();
         int startIndex = message.lastIndexOf("{");
-        int endIndex = message.lastIndexOf("}") + 1;
-        message = message.substring(startIndex, endIndex);
+        int endIndex = message.lastIndexOf("}");
+        if (startIndex == -1 || endIndex == -1 || endIndex < startIndex) return;
+        message = message.substring(startIndex, endIndex + 1);
         WaypointStore.instance().save(getWaypoint(message));
     }
 }

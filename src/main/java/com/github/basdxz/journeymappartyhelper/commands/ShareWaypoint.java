@@ -1,7 +1,7 @@
 package com.github.basdxz.journeymappartyhelper.commands;
 
-import com.github.basdxz.journeymappartyhelper.util.*;
 import com.github.basdxz.journeymappartyhelper.things.ChatFriendlyWaypoint;
+import journeymap.client.model.Waypoint;
 import journeymap.client.waypoint.WaypointStore;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.command.CommandBase;
@@ -28,7 +28,7 @@ public class ShareWaypoint extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender iCommandSender) {
-        return "/" + getCommandName() + " player waypoint";
+        return "/" + getCommandName() + " player waypointID";
     }
 
     @Override
@@ -39,12 +39,18 @@ public class ShareWaypoint extends CommandBase {
     @Override
     public void processCommand(ICommandSender iCommandSender, String[] strings) {
         if (iCommandSender instanceof EntityClientPlayerMP) {
-            if (strings.length < 3) {
+            if (strings.length < 2) {
                 throw new SyntaxErrorException(getCommandUsage(iCommandSender));
             }
+            String playerRecipient = strings[0];
+            String waypointIDNoSpaces = strings[1];
             EntityClientPlayerMP playerClient = (EntityClientPlayerMP) iCommandSender;
-            WaypointStore.instance().getAll().forEach(
-                    waypoint -> playerClient.sendChatMessage(ChatFriendlyWaypoint.toString(waypoint)));
+            for (Waypoint waypoint : WaypointStore.instance().getAll()) {
+                if (waypoint.getId().replaceAll("\\s+", "").equals(waypointIDNoSpaces)) {
+                    playerClient.sendChatMessage("./tell " + playerRecipient + " " + ChatFriendlyWaypoint.toString(waypoint));
+                    return;
+                }
+            }
         }
     }
 

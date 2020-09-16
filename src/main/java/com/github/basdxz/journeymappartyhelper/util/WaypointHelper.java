@@ -13,7 +13,7 @@ public class WaypointHelper {
             ChatFriendlyWaypoint chatFriendlyWaypoint = new ChatFriendlyWaypoint(waypoint);
             String chatFriendlyWaypointJson = chatFriendlyWaypoint.toString();
             if (chatFriendlyWaypointJson.length() <= 100) {
-                chatFriendlyWaypoints.add(waypoint.getId());
+                chatFriendlyWaypoints.add(waypoint.getId().replaceAll("\\s+",""));
             }
         });
         return chatFriendlyWaypoints;
