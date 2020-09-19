@@ -13,14 +13,18 @@ public class ClientChatHandler {
         //Checks that both { and } exist
         int startIndex = message.lastIndexOf("{");
         int endIndex = message.lastIndexOf("}");
-        if (startIndex == -1 || endIndex == -1 || startIndex > endIndex) {
+        if (startIndex == -1 || endIndex == -1 || endIndex - startIndex <= 1) {
             return;
         }
 
         String waypointString;
         ChatFriendlyWaypoint waypoint = new ChatFriendlyWaypoint();
         waypointString = message.substring(startIndex, endIndex + 1);
-        waypoint.fromChatFriendlyString(waypointString);
+        try {
+            waypoint.fromChatFriendlyString(waypointString);
+        } catch (Exception ignored) {
+            return;
+        }
         WaypointStore.instance().save(waypoint);
 
         String waypointReadableString = "[Name: " + waypoint.getName() + " X:" + waypoint.getX() +

@@ -46,9 +46,17 @@ public class ChatFriendlyWaypoint extends Waypoint {
         //if(isExtendedByAByte) cfWaypointBytesExpectedEnd--;
         if (isCorrectiveExtendedByAByte) cfWaypointBytesExpectedEnd--;
 
-        byte[] correctiveBytes = Arrays.copyOfRange(cfWaypointBytes, 1, requiredCorrectiveBytes + 1);
-        short[] cfWaypointShorts = bytesToShorts(Arrays.copyOfRange(cfWaypointBytes, requiredCorrectiveBytes + 1,
-                cfWaypointBytesExpectedEnd));
+        byte[] correctiveBytes;
+        short[] cfWaypointShorts;
+
+        try {
+            correctiveBytes = Arrays.copyOfRange(cfWaypointBytes, 1, requiredCorrectiveBytes + 1);
+            cfWaypointShorts = bytesToShorts(Arrays.copyOfRange(cfWaypointBytes, requiredCorrectiveBytes + 1,
+                    cfWaypointBytesExpectedEnd));
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Malformed Waypoint Data!");
+        }
+
         int cByteCount = 0;
         int cBitCount = 1;
         for (int i = 0; i < cfWaypointShorts.length; i++) {
