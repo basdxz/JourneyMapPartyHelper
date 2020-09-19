@@ -1,5 +1,6 @@
 package com.github.basdxz.journeymappartyhelper.commands;
 
+import com.github.basdxz.journeymappartyhelper.things.ChatFriendlyWaypoint;
 import journeymap.client.model.Waypoint;
 import journeymap.client.waypoint.WaypointStore;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -11,7 +12,6 @@ import net.minecraft.server.MinecraftServer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.basdxz.journeymappartyhelper.things.ChatFriendlyWaypoint.compressJsonWaypoint;
 import static com.github.basdxz.journeymappartyhelper.things.ChatFriendlyWaypoint.getAllChatFriendlyWaypoints;
 
 public class ShareWaypoint extends CommandBase {
@@ -47,7 +47,9 @@ public class ShareWaypoint extends CommandBase {
             EntityClientPlayerMP playerClient = (EntityClientPlayerMP) iCommandSender;
             for (Waypoint waypoint : WaypointStore.instance().getAll()) {
                 if (waypoint.getId().replaceAll("\\s+", "").equals(waypointIDNoSpaces)) {
-                    playerClient.sendChatMessage("/tell " + playerRecipient + " " + compressJsonWaypoint(waypoint));
+                    ChatFriendlyWaypoint chatFriendlyWaypoint = new ChatFriendlyWaypoint(waypoint);
+                    String out = chatFriendlyWaypoint.toChatFriendlyString();
+                    playerClient.sendChatMessage("./tell " + playerRecipient + " " + out);
                     return;
                 }
             }
