@@ -1,6 +1,6 @@
 package com.github.basdxz.journeymappartyhelper.commands;
 
-import com.github.basdxz.journeymappartyhelper.things.ChatFriendlyWaypoint;
+import com.github.basdxz.journeymappartyhelper.model.ChatFriendlyWaypoint;
 import journeymap.client.model.Waypoint;
 import journeymap.client.waypoint.WaypointStore;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -11,11 +11,11 @@ import net.minecraft.server.MinecraftServer;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.github.basdxz.journeymappartyhelper.things.ChatFriendlyWaypoint.getAllChatFriendlyWaypoints;
+import java.util.regex.Pattern;
 
 public class ShareWaypoint extends CommandBase {
-    final private ArrayList<String> aliases = new ArrayList<>();
+    private static final Pattern REG_EX_SPACES = Pattern.compile("\\s+");
+    private final ArrayList<String> aliases = new ArrayList<>();
 
     public ShareWaypoint() {
         aliases.add("shareWaypoint");
@@ -46,11 +46,10 @@ public class ShareWaypoint extends CommandBase {
             String waypointIDNoSpaces = strings[1];
             EntityClientPlayerMP playerClient = (EntityClientPlayerMP) iCommandSender;
             for (Waypoint waypoint : WaypointStore.instance().getAll()) {
-                if (waypoint.getId().replaceAll("\\s+", "").equals(waypointIDNoSpaces)) {
+                if (REG_EX_SPACES.matcher(waypoint.getId()).replaceAll("").equals(waypointIDNoSpaces)) {
                     ChatFriendlyWaypoint chatFriendlyWaypoint = new ChatFriendlyWaypoint(waypoint);
-                    String out = chatFriendlyWaypoint.toChatFriendlyString();
-                    playerClient.sendChatMessage("./tell " + playerRecipient + " " + out);
-                    return;
+                    String out = chatFriendlyWaypoint.toChatString();
+                    playerClient.sendChatMessage("./tell " + playerRecipient + " {" + out + "}");
                 }
             }
         }
@@ -58,23 +57,29 @@ public class ShareWaypoint extends CommandBase {
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender iCommandSender, String[] strings) {
+        List<String> outputList;
         switch (strings.length) {
             case 1:
                 //noinspection unchecked
-                return getListOfStringsMatchingLastWord(strings, this.getPlayers());
+                outputList = getListOfStringsMatchingLastWord(strings, getPlayers());
+                break;
             case 2:
                 //noinspection unchecked
-                return getListOfStringsFromIterableMatchingLastWord(strings, getAllChatFriendlyWaypoints());
+                outputList = getListOfStringsFromIterableMatchingLastWord(strings,
+                        ChatFriendlyWaypoint.getAllChatFriendlyWaypoints());
+                break;
             default:
-                return null;
+                outputList = null;
         }
+        return outputList;
     }
 
     protected String[] getPlayers() {
         return MinecraftServer.getServer().getAllUsernames();
     }
 
-    public boolean isUsernameIndex(String[] p_82358_1_, int p_82358_2_) {
-        return p_82358_2_ == 0;
+    @Override
+    public boolean isUsernameIndex(String[] strings, int index) {
+        return index == 0;
     }
 }

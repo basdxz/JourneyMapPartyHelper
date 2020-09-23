@@ -8,11 +8,13 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import static com.github.basdxz.journeymappartyhelper.Reference.*;
-
-@Mod(modid = MODID, name = Reference.NAME, version = VERSION)
+@Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
 public class JourneymapPartyHelper {
+    public static final Logger LOGGER = LogManager.getLogger(Reference.MODID);
+
     @SideOnly(Side.CLIENT)
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {

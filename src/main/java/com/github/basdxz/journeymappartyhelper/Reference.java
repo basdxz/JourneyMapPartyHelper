@@ -6,6 +6,7 @@ public final class Reference {
     public static final String MODID = "@MODID@";
     public static final String NAME = "@NAME@";
     public static final String VERSION = "@VERSION@";
+    public static final boolean DEBUG = true;
 
     private Reference() {}
 }
