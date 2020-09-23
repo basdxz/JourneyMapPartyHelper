@@ -6,13 +6,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: class with private constructor.
 public enum Util {
     ;
     public static final int SHORT_MASK = 0xFFFF;
     public static final int BYTE_MASK = 0xFF;
     public static final int NIBBLE_MASK = 0xF;
 
-    private static void checkNibble(byte input){
+    private static void checkNibble(byte input){ //todo maybe make this return true or false to avoid throws?
         //Converts nibbles to integers and unsigns them (so (byte)-127 becomes (int)129 etc)
         //Compares them with 15, which is the max size for a nibble
         if ((input & BYTE_MASK) > NIBBLE_MASK){
@@ -40,6 +41,7 @@ public enum Util {
         return outputNibbles;
     }
 
+    //TODO: Methodes that throw arent inlineable, better make this method use 2 bytes as paremeters
     public static short[] bytesToShorts(byte... bytes) {
         if (bytes.length < 2) {
             throw new IllegalArgumentException("Less than 2 bytes provided!");
@@ -86,6 +88,7 @@ public enum Util {
         return outputBytes;
     }
 
+    //TODO: not inline-able, better make a Util class for target bit, that has a set of constants
     private static byte maskBit(int targetBit) {
         if (targetBit < 0 || targetBit > 7) {
             throw new IllegalArgumentException("targetBit must be 0 to 7!");
