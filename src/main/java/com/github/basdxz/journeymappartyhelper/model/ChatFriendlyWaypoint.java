@@ -22,7 +22,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
     private static final int CORRECTION_PAYLOAD_HEADER_LENGTH = 1;
     //Fully aware this sets the byte to -128
     @SuppressWarnings("NumericCastThatLosesPrecision")
-    private static final byte PRE_CORRECTED_BYTE_MASK = (byte) 0b1000_0000;
+    private static final byte PRE_CORRECTED_BYTE_MASK = (byte) 0b1000_0000; //-127
     private static final byte CORRECTION_BYTES_MAX_LENGTH = 0b0011_1111;
     private static final byte ODD_DATA_BYTE_MASK = 0b0100_0000;
     //Sending § or  will get your client kicked
@@ -59,13 +59,14 @@ public class ChatFriendlyWaypoint extends Waypoint {
             } catch (Exception ignored) {
             }
         }
-
+        //TODO: invert if to reduce complexity
         if (outputWaypoint == null){
             outputWaypoint = new ChatFriendlyWaypoint(" ", 0, 0, 0, ERROR_DIM_ID);
         }
         return outputWaypoint;
     }
 
+    //TODO: class with private constructor, in a own file
     private enum Encode {
         ;
         static byte[] toByteArray(ChatFriendlyWaypoint orgin) {
@@ -95,6 +96,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             //Get payload data into fields
             //Note: BigInteger's toByteArray will drop leading 0 bytes
             byte[] nameBytes = safeName.getBytes(StandardCharsets.UTF_8);
+            //TODO: Dont use BigIntergers -> WAYWAYWAY too much memory allocation. Do something like Bytebuffer.putint or shift the bytes yourself into an array
             byte[] xBytes = BigInteger.valueOf(orgin.getX()).toByteArray();
             byte[] yBytes = BigInteger.valueOf(orgin.getY()).toByteArray();
             byte[] zBytes = BigInteger.valueOf(orgin.getZ()).toByteArray();
@@ -114,6 +116,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             int zPosOffsetNibble = payload[3].length - 1;
             int dPosOffsetNibble = payload[4].length - 1;
 
+            //TODO: Create a new Method for this as a parameter, use either an int[] or a custom class, these checks make the Method too long (20lines max)
             //Bound check pre casting
             if (nameOffsetByte > Util.BYTE_MASK){
                 throw new IllegalArgumentException("Waypoint name too big!");
@@ -169,6 +172,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
                 throw new IllegalArgumentException("Input bytes can't be null!");
             }
 
+            //TODO return early instead of allocating a new byte[]
             byte[] outputBytes;
             if (isDataBytesLengthOdd(inputBytes.length)) {
                 outputBytes = Util.concatenateByteArrays(inputBytes, new byte[]{PRE_CORRECTED_BYTE_MASK});
@@ -178,6 +182,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             return outputBytes;
         }
 
+        //TODO: Method too long (more than 20lines)
         private static byte[] getCorrectionPayload(byte... inputData) {
             if (inputData == null) {
                 throw new IllegalArgumentException("Input bytes can't be null!");
@@ -218,6 +223,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             return correctionPayload;
         }
 
+        //TODO: Method too long (more than 20lines)
         static byte[] correctData(byte[]... inputBytes) {
             //Ton of sanity checks
             if (inputBytes.length != 2) {
@@ -293,8 +299,10 @@ public class ChatFriendlyWaypoint extends Waypoint {
         }
     }
 
+    //TODO: class with private constructor, in a own file
     private enum Decode {
         ;
+        //TODO: Method too long (more than 20lines)
         static ChatFriendlyWaypoint fromByteArray(byte[] bytes){
             //TODO Check inputs
             byte correctionHeader = bytes[0];
@@ -369,6 +377,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             return new String(Arrays.copyOfRange(inputData, 0, nameOffset), StandardCharsets.UTF_8);
         }
 
+        //TODO: Method too long
         private static int[] getPosition(byte[]... inputBytes) {
             if (inputBytes.length != 2) {
                 throw new IllegalArgumentException("Input Bytes must be 2 in length!");
@@ -382,6 +391,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
                 throw new IllegalArgumentException("Input Offsets can't be null!");
             }
 
+            //TODO, supress instead of redundant noinspection
             byte namePosOffset = inputOffsets[0];
             //noinspection NumericCastThatLosesPrecision
             byte xPosOffset = (byte) (namePosOffset + inputOffsets[1]);
@@ -393,6 +403,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             byte dPosOffset = (byte) (zPosOffset + inputOffsets[4]);
 
             byte[] xPosbytes = Arrays.copyOfRange(inputData, namePosOffset, xPosOffset);
+            //TODO: NO BIG INTERGERS! USE BYTESHIFT OR BYTEBUFFER!
             int xPos = new BigInteger(xPosbytes).intValue();
 
             byte[] yPosbytes = Arrays.copyOfRange(inputData, xPosOffset, yPosOffset);

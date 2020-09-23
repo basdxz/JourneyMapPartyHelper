@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class ShareWaypoint extends CommandBase {
-    private static final Pattern REG_EX_SPACES = Pattern.compile("\\s+");
+    private static final Pattern REG_EX_SPACES = Pattern.compile("\\s+"); //TODO see ClientChatHandler Pattern comment
     private final ArrayList<String> aliases = new ArrayList<>();
 
     public ShareWaypoint() {
         aliases.add("shareWaypoint");
     }
+
+    //TODO:  public int getRequiredPermissionLevel() is missing, this wont work in SMP
 
     @Override
     public String getCommandName() {
@@ -49,7 +51,7 @@ public class ShareWaypoint extends CommandBase {
                 if (REG_EX_SPACES.matcher(waypoint.getId()).replaceAll("").equals(waypointIDNoSpaces)) {
                     ChatFriendlyWaypoint chatFriendlyWaypoint = new ChatFriendlyWaypoint(waypoint);
                     String out = chatFriendlyWaypoint.toChatString();
-                    playerClient.sendChatMessage("./tell " + playerRecipient + " {" + out + "}");
+                    playerClient.sendChatMessage("./tell " + playerRecipient + " {" + out + "}"); //TODO: Use some kind of unique character to prevent acidental detection
                 }
             }
         }
@@ -58,6 +60,7 @@ public class ShareWaypoint extends CommandBase {
     @Override
     public List<String> addTabCompletionOptions(ICommandSender iCommandSender, String[] strings) {
         List<String> outputList;
+        //TODO switch with too few cases, better use if, elseif, else
         switch (strings.length) {
             case 1:
                 //noinspection unchecked

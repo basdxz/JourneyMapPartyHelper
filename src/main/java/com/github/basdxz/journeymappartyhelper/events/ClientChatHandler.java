@@ -12,13 +12,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ClientChatHandler {
-    private static final Pattern PATTERN = Pattern.compile("\\{(.?)}");
+    private static final Pattern PATTERN = Pattern.compile("\\{(.?)}"); //TODO regex is relatively expensive to call, is this def. needed?
 
     @SubscribeEvent
     public void onMessageReceived(ClientChatReceivedEvent event) {
         String message = event.message.getFormattedText();
 
         List<String> list = new ArrayList<>();
+        //todo you could do something like while char.at(x) != } stringbuilder.add(char)
         Matcher matcher = PATTERN.matcher(message);
         while (matcher.find()) {
             list.add(matcher.group());
