@@ -283,6 +283,7 @@ repositories {
  */
 dependencies {
     compile name: "junit",            group: "junit",                                 version: "4.11"
+    compile files('libs/journeymap-1.7.10-5.1.4p2-unlimited-dev.jar')
     //runtime name: "NotEnoughItems",     group: "codechicken",       version: nei_version,       classifier: "dev"
     //runtime name: "CodeChickenLib",     group: "codechicken",       version: ccl_version,       classifier: "dev"
     //runtime name: "CodeChickenCore",    group: "codechicken",       version: ccc_version,       classifier: "dev"

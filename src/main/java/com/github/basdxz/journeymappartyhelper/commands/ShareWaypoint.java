@@ -21,7 +21,10 @@ public class ShareWaypoint extends CommandBase {
         aliases.add("shareWaypoint");
     }
 
-    //TODO:  public int getRequiredPermissionLevel() is missing, this wont work in SMP
+    @Override
+    public int getRequiredPermissionLevel() {
+        return 0;
+    }
 
     @Override
     public String getCommandName() {
@@ -31,11 +34,6 @@ public class ShareWaypoint extends CommandBase {
     @Override
     public String getCommandUsage(ICommandSender iCommandSender) {
         return "/" + getCommandName() + " player waypointID";
-    }
-
-    @Override
-    public boolean canCommandSenderUseCommand(ICommandSender iCommandSender) {
-        return true;
     }
 
     @Override
@@ -60,19 +58,13 @@ public class ShareWaypoint extends CommandBase {
     @Override
     public List<String> addTabCompletionOptions(ICommandSender iCommandSender, String[] strings) {
         List<String> outputList;
-        //TODO switch with too few cases, better use if, elseif, else
-        switch (strings.length) {
-            case 1:
-                //noinspection unchecked
-                outputList = getListOfStringsMatchingLastWord(strings, getPlayers());
-                break;
-            case 2:
-                //noinspection unchecked
-                outputList = getListOfStringsFromIterableMatchingLastWord(strings,
-                        ChatFriendlyWaypoint.getAllChatFriendlyWaypoints());
-                break;
-            default:
-                outputList = null;
+        if (strings.length == 1) {//noinspection unchecked
+            outputList = getListOfStringsMatchingLastWord(strings, getPlayers());
+        } else if (strings.length == 2) {//noinspection unchecked
+            outputList = getListOfStringsFromIterableMatchingLastWord(strings,
+                    ChatFriendlyWaypoint.getAllChatFriendlyWaypoints());
+        } else {
+            outputList = null;
         }
         return outputList;
     }
