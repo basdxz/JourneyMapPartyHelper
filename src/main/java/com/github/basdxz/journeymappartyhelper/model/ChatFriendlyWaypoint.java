@@ -52,21 +52,20 @@ public class ChatFriendlyWaypoint extends Waypoint {
         String dataSubString = inputString.substring(1, inputString.length() - 1);
         ChatFriendlyWaypoint outputWaypoint = null;
 
+        //TODO: Make this check in the Chat reading regex stuff
         if (dataSubString.length() >= 5){
             try{
                 byte[] rawWaypointBytes = Util.aUTF16StringToByteArray(dataSubString);
                 outputWaypoint = Decode.fromByteArray(rawWaypointBytes);
             } catch (Exception ignored) {
+                outputWaypoint = new ChatFriendlyWaypoint(" ", 0, 0, 0, ERROR_DIM_ID);
             }
         }
-        //TODO: invert if to reduce complexity
-        if (outputWaypoint == null){
-            outputWaypoint = new ChatFriendlyWaypoint(" ", 0, 0, 0, ERROR_DIM_ID);
-        }
+
         return outputWaypoint;
     }
 
-    //TODO: class with private constructor, in a own file
+    //TODO: enum to class with private constructor in separate file
     private enum Encode {
         ;
         static byte[] toByteArray(ChatFriendlyWaypoint orgin) {
@@ -80,7 +79,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             dataPreCorrection = makeDataBytesEven(dataPreCorrection);
             byte[] correctionPayload = getCorrectionPayload(dataPreCorrection);
             byte[] dataPostCorrection = correctData(dataPreCorrection, correctionPayload);
-            //TODO Check if byte count even, throw exception if not!
+            //TODO: Check if byte count even, throw exception if not!
             return Util.concatenateByteArrays(correctionHeader, correctionPayload, dataPostCorrection);
         }
 
@@ -96,7 +95,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             //Get payload data into fields
             //Note: BigInteger's toByteArray will drop leading 0 bytes
             byte[] nameBytes = safeName.getBytes(StandardCharsets.UTF_8);
-            //TODO: Dont use BigIntergers -> WAYWAYWAY too much memory allocation. Do something like Bytebuffer.putint or shift the bytes yourself into an array
+            //TODO: Dont use BigIntergers, switch to: Ints.toByteArray(<int>)
             byte[] xBytes = BigInteger.valueOf(orgin.getX()).toByteArray();
             byte[] yBytes = BigInteger.valueOf(orgin.getY()).toByteArray();
             byte[] zBytes = BigInteger.valueOf(orgin.getZ()).toByteArray();
@@ -116,7 +115,6 @@ public class ChatFriendlyWaypoint extends Waypoint {
             int zPosOffsetNibble = payload[3].length - 1;
             int dPosOffsetNibble = payload[4].length - 1;
 
-            //TODO: Create a new Method for this as a parameter, use either an int[] or a custom class, these checks make the Method too long (20lines max)
             //Bound check pre casting
             if (nameOffsetByte > Util.BYTE_MASK){
                 throw new IllegalArgumentException("Waypoint name too big!");
@@ -167,22 +165,23 @@ public class ChatFriendlyWaypoint extends Waypoint {
             return new byte[]{(byte) correctionHeader};
         }
 
+        //TODO: Don't use var args!
         private static byte[] makeDataBytesEven(byte... inputBytes) {
             if (inputBytes == null) {
                 throw new IllegalArgumentException("Input bytes can't be null!");
             }
 
-            //TODO return early instead of allocating a new byte[]
             byte[] outputBytes;
             if (isDataBytesLengthOdd(inputBytes.length)) {
                 outputBytes = Util.concatenateByteArrays(inputBytes, new byte[]{PRE_CORRECTED_BYTE_MASK});
             } else {
                 outputBytes = inputBytes;
             }
+
             return outputBytes;
         }
 
-        //TODO: Method too long (more than 20lines)
+        //TODO: Don't use var args!
         private static byte[] getCorrectionPayload(byte... inputData) {
             if (inputData == null) {
                 throw new IllegalArgumentException("Input bytes can't be null!");
@@ -223,9 +222,9 @@ public class ChatFriendlyWaypoint extends Waypoint {
             return correctionPayload;
         }
 
-        //TODO: Method too long (more than 20lines)
+        //TODO: Don't use var args!
         static byte[] correctData(byte[]... inputBytes) {
-            //Ton of sanity checks
+            //TODO: Cut down on the sanity checks, put more on one line
             if (inputBytes.length != 2) {
                 throw new IllegalArgumentException("Input must be data and corrective payload!");
             }
@@ -299,12 +298,10 @@ public class ChatFriendlyWaypoint extends Waypoint {
         }
     }
 
-    //TODO: class with private constructor, in a own file
+    //TODO: enum to class with private constructor in separate file
     private enum Decode {
         ;
-        //TODO: Method too long (more than 20lines)
         static ChatFriendlyWaypoint fromByteArray(byte[] bytes){
-            //TODO Check inputs
             byte correctionHeader = bytes[0];
             int correctionPayloadLength = getCorrectionPayloadLength(correctionHeader);
 
@@ -323,6 +320,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
                 dataPayload = Arrays.copyOfRange(dataPreCorrection, DATA_PAYLOAD_HEADER_LENGTH,
                         dataPreCorrection.length);
             }
+            //TODO: Put dataPayload and offsetBytes into new getFromRaw method inside Decode
 
             String name = getName(dataPayload, offsetBytes);
             int[] positionData = getPosition(dataPayload, offsetBytes);
@@ -377,7 +375,7 @@ public class ChatFriendlyWaypoint extends Waypoint {
             return new String(Arrays.copyOfRange(inputData, 0, nameOffset), StandardCharsets.UTF_8);
         }
 
-        //TODO: Method too long
+        @SuppressWarnings("NumericCastThatLosesPrecision")
         private static int[] getPosition(byte[]... inputBytes) {
             if (inputBytes.length != 2) {
                 throw new IllegalArgumentException("Input Bytes must be 2 in length!");
@@ -391,19 +389,14 @@ public class ChatFriendlyWaypoint extends Waypoint {
                 throw new IllegalArgumentException("Input Offsets can't be null!");
             }
 
-            //TODO, supress instead of redundant noinspection
             byte namePosOffset = inputOffsets[0];
-            //noinspection NumericCastThatLosesPrecision
             byte xPosOffset = (byte) (namePosOffset + inputOffsets[1]);
-            //noinspection NumericCastThatLosesPrecision
             byte yPosOffset = (byte) (xPosOffset + inputOffsets[2]);
-            //noinspection NumericCastThatLosesPrecision
             byte zPosOffset = (byte) (yPosOffset + inputOffsets[3]);
-            //noinspection NumericCastThatLosesPrecision
             byte dPosOffset = (byte) (zPosOffset + inputOffsets[4]);
 
             byte[] xPosbytes = Arrays.copyOfRange(inputData, namePosOffset, xPosOffset);
-            //TODO: NO BIG INTERGERS! USE BYTESHIFT OR BYTEBUFFER!
+            //TODO: Dont use BigIntergers, switch to: Ints.toByteArray(<int>)
             int xPos = new BigInteger(xPosbytes).intValue();
 
             byte[] yPosbytes = Arrays.copyOfRange(inputData, xPosOffset, yPosOffset);

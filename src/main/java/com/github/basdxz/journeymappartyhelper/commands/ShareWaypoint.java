@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class ShareWaypoint extends CommandBase {
-    private static final Pattern REG_EX_SPACES = Pattern.compile("\\s+"); //TODO see ClientChatHandler Pattern comment
+    private static final Pattern REG_EX_SPACES = Pattern.compile("\\s+");
     private final ArrayList<String> aliases = new ArrayList<>();
 
     public ShareWaypoint() {
@@ -49,7 +49,8 @@ public class ShareWaypoint extends CommandBase {
                 if (REG_EX_SPACES.matcher(waypoint.getId()).replaceAll("").equals(waypointIDNoSpaces)) {
                     ChatFriendlyWaypoint chatFriendlyWaypoint = new ChatFriendlyWaypoint(waypoint);
                     String out = chatFriendlyWaypoint.toChatString();
-                    playerClient.sendChatMessage("./tell " + playerRecipient + " {" + out + "}"); //TODO: Use some kind of unique character to prevent acidental detection
+                    //TODO: Use some kind of unique characters from bytes 200-500
+                    playerClient.sendChatMessage("./tell " + playerRecipient + " {" + out + "}");
                 }
             }
         }

@@ -11,7 +11,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
+    @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
 public class JourneymapPartyHelper {
     public static final Logger LOGGER = LogManager.getLogger(Reference.MODID);
 

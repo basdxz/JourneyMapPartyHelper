@@ -17,7 +17,6 @@ public class ChatFriendlyWaypointTest {
 
     }
 
-    //TODO: This test literally only tests "Arrays.copyOfRange" which is an internal Method, that doesnt need to be tested
     @Test
     public void constructors() {
         byte[] main = {1, 2, 3, 4, 5};
